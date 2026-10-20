@@ -20,7 +20,7 @@ function init() {
         { field: "Availability", before: "From 1 Mar 2027 · 20 hrs/week", after: "From 1 Feb 2027 · 30 hrs/week" },
       ] },
       { slug: "tomasz-wielgus", submittedAt: "2026-10-20", status: "in_review", changes: [{ field: "Portfolio", before: "—", after: "+ Kafka migration" }] },
-      { slug: "hana-sato", submittedAt: "2026-10-21", status: "in_review", changes: [{ field: "Headline", before: "Product Designer at NODAL.", after: "Research-led product designer." }] },
+      { slug: "hana-sato", submittedAt: "2026-10-21", status: "in_review", changes: [{ field: "Headline", before: "Product Designer at Kerl Labs.", after: "Research-led product designer." }] },
       { slug: "noor-haddad", submittedAt: "2026-10-15", status: "changes_requested", note: "Add one deliverable example.", changes: [{ field: "Services", before: "—", after: "+ Core Web Vitals sprint" }] },
     ] as Revision[],
     activity: [

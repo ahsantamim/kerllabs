@@ -50,7 +50,7 @@ export function Hero({ stats, services }: { stats: SiteStats; services: Service[
             className="type-display-xl max-w-[760px]"
           />
           <p id="hero-title" className="max-w-[540px] type-body-l text-fg-muted">
-            NODAL is a senior engineering team spread across six time zones. Hire all of us to take a product from architecture
+            Kerl Labs is a senior engineering team spread across six time zones. Hire all of us to take a product from architecture
             to launch — or bring in one specialist for the problem in front of you.
           </p>
           <div className="flex flex-col gap-3 tablet:flex-row">

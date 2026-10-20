@@ -88,7 +88,7 @@ export function HireSpecialist({ specialist: s, initialStep = 1 }: { specialist:
             <TextField label="Full name" required value={d.name} onChange={(e) => set("name", e.target.value)} state={touched && !d.name.trim() ? "error" : d.name ? "success" : "default"} helper={touched && !d.name.trim() ? "Enter your name." : d.name ? "Looks good." : undefined} />
             <TextField label="Work email" required type="email" value={d.email} onChange={(e) => set("email", e.target.value)} state={touched && !emailOk ? "error" : emailOk ? "success" : "default"} helper={touched && !emailOk ? "Enter a full email address, e.g. name@company.com" : undefined} />
           </div>
-          <Checkbox label="I agree to NODAL storing these details to respond to my request (privacy notice)." checked={d.consent} onChange={(e) => set("consent", e.target.checked)} error={touched && !d.consent ? "Please accept to continue." : undefined} />
+          <Checkbox label="I agree to Kerl Labs storing these details to respond to my request (privacy notice)." checked={d.consent} onChange={(e) => set("consent", e.target.checked)} error={touched && !d.consent ? "Please accept to continue." : undefined} />
         </>
       )}
       {step === 3 && (

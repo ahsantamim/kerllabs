@@ -30,16 +30,16 @@ export function Footer() {
             ))}
             <div className="flex flex-col gap-3.5">
               <span className="type-mono-s text-fg-subtle">Contact</span>
-              <a href="mailto:hello@nodal.example" className="type-body-m hover:text-accent">hello@nodal.example</a>
+              <a href="mailto:hello@kerllabs.example" className="type-body-m hover:text-accent">hello@kerllabs.example</a>
               <span className="type-body-s text-fg-muted">Replies within 1 business day</span>
             </div>
           </div>
         </div>
         <span aria-hidden="true" className="select-none text-[clamp(96px,22vw,320px)] font-medium leading-[0.8] tracking-[-0.06em] text-fg/[0.07]">
-          NODAL
+          KERL LABS
         </span>
         <div className="flex flex-col justify-between gap-4 type-body-s text-fg-subtle tablet:flex-row">
-          <span>© 2026 NODAL — fictional brand used for design exploration</span>
+          <span>© 2026 Kerl Labs</span>
           <span className="flex gap-6">
             <Link href="/contact">Privacy</Link>
             <Link href="/contact">Terms</Link>

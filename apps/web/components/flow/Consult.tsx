@@ -107,7 +107,7 @@ export function Consult({ hosts, initialHost }: { hosts: Host[]; initialHost?: s
             <TextField label="Work email" required type="email" value={f.email} onChange={(e) => setF({ ...f, email: e.target.value })} helper="We use your company domain to track your 2 free sessions. Try ferrolabs.dev to see the limit state." />
           </div>
           <TextArea label={`Anything ${first} should read first? (optional)`} value={f.notes} onChange={(e) => setF({ ...f, notes: e.target.value })} />
-          <Checkbox label="I agree to NODAL storing these details to arrange the call (privacy notice)." checked={f.consent} onChange={(e) => setF({ ...f, consent: e.target.checked })} />
+          <Checkbox label="I agree to Kerl Labs storing these details to arrange the call (privacy notice)." checked={f.consent} onChange={(e) => setF({ ...f, consent: e.target.checked })} />
         </>
       )}
     </FlowShell>

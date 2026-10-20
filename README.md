@@ -1,9 +1,9 @@
-# NODAL — website + CMS monorepo
+# Kerl Labs — website + CMS monorepo
 
 Next.js 15 (App Router) · React 19 · Tailwind CSS v4 · TypeScript · pnpm workspaces · Turborepo · Prisma.
-Built 1:1 from the Figma file *NODAL — Engineering Team Portfolio & Service Brand*. Design rules live in **[DESIGN.md](./DESIGN.md)**.
+Built from the Figma file *NODAL — Engineering Team Portfolio & Service Brand*. Design rules live in **[DESIGN.md](./DESIGN.md)**.
 
-> NODAL is a placeholder brand. Every person, project and product in `packages/content/src/data.ts` is fictional. Replace it before launch.
+> Every person, project and product in `packages/content/src/data.ts` is fictional. Replace it before launch.
 
 ## Quick start
 

@@ -125,7 +125,7 @@ export function HireTeam({ disciplines }: { disciplines: string[] }) {
             <TextField label="Work email" required type="email" autoComplete="email" value={d.email} onChange={(e) => set("email", e.target.value)} state={touched && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email) ? "error" : d.email ? "success" : "default"} helper={touched && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.email) ? "Enter a full email address, e.g. name@company.com" : undefined} />
             <TextField label="Company" autoComplete="organization" value={d.company} onChange={(e) => set("company", e.target.value)} />
           </div>
-          <Checkbox label="I agree to NODAL storing these details to respond to my inquiry (privacy notice)." checked={d.consent} onChange={(e) => set("consent", e.target.checked)} error={touched && !d.consent ? "Please accept to continue." : undefined} />
+          <Checkbox label="I agree to Kerl Labs storing these details to respond to my inquiry (privacy notice)." checked={d.consent} onChange={(e) => set("consent", e.target.checked)} error={touched && !d.consent ? "Please accept to continue." : undefined} />
         </>
       )}
     </FlowShell>

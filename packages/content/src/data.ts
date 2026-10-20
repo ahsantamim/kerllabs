@@ -32,7 +32,7 @@ export const specialists: Specialist[] = [
     headline: "I make LLM features measurable, safe and affordable to run — then leave your team able to keep them that way.",
     about: [
       "Amara has spent nine years building data-heavy products, the last four putting language models into production for search, support and document workflows. She cares about the unglamorous parts — evaluation sets, failure taxonomies, latency and cost budgets — because that is where AI features succeed or quietly fail.",
-      "At NODAL she leads AI engagements and pairs closely with backend and database engineers. She is happiest embedded in a client team, writing code and leaving behind documentation people actually read.",
+      "At Kerl Labs she leads AI engagements and pairs closely with backend and database engineers. She is happiest embedded in a client team, writing code and leaving behind documentation people actually read.",
     ],
     location: "Lagos, Nigeria", city: "Lagos", timezone: "UTC+1", utcOffset: 1, languages: ["English", "Yoruba", "French"],
     yearsExperience: "9 years · 4 in applied ML", engagement: "20–30 hrs/week · min. 2 months", responseTime: "Usually same day",
@@ -56,7 +56,7 @@ export const specialists: Specialist[] = [
       { id: "p4", kind: "nda", title: "Support deflection assistant", summary: "Details shared on request — client under NDA.", stack: ["AI"] },
     ],
     experience: [
-      { period: "2023 — now", title: "Lead AI Engineer", org: "NODAL", summary: "Leads AI engagements; built the internal eval toolkit." },
+      { period: "2023 — now", title: "Lead AI Engineer", org: "Kerl Labs", summary: "Leads AI engagements; built the internal eval toolkit." },
       { period: "2020 — 2023", title: "Senior ML Engineer", org: "Series B fintech (NDA)", summary: "Search and document classification in production." },
       { period: "2017 — 2020", title: "Backend Engineer", org: "Logistics scale-up", summary: "Data pipelines and APIs for fleet operations." },
       { period: "2015 — 2017", title: "Software Engineer", org: "Digital agency", summary: "Web platforms for retail clients." },
@@ -84,7 +84,7 @@ export const specialists: Specialist[] = [
   ] as const).map(([slug, name, initials, role, discipline, timezone, utcOffset, city, tags, featured, avail, tone]) => ({
     ...base,
     slug, name, initials, role, discipline, timezone, utcOffset, city,
-    headline: `${role.split(" · ")[0]} at NODAL.`,
+    headline: `${role.split(" · ")[0]} at Kerl Labs.`,
     about: [`${name} is a sample specialist profile used to demonstrate the dynamic portfolio template.`],
     location: city, languages: ["English"], yearsExperience: "8+ years", engagement: "20–40 hrs/week",
     responseTime: "Within 1 business day",

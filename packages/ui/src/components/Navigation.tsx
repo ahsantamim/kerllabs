@@ -40,7 +40,7 @@ export function Navigation() {
       )}
     >
       <nav className="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-5 tablet:h-20 tablet:px-10 desktop:px-12" aria-label="Main">
-        <Link href="/" aria-label="NODAL home">
+        <Link href="/" aria-label="Kerl Labs home">
           <Logo />
         </Link>
         <ul className="hidden items-center gap-1 rounded-full border border-line-subtle bg-surface-1/60 p-1 desktop:flex">

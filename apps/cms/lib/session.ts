@@ -16,10 +16,10 @@ export interface Session {
 export const SESSION_COOKIE = "nodal_session";
 
 export const DEV_USERS: Session[] = [
-  { name: "Mira Alvarez", email: "admin@nodal.example", role: "admin" },
-  { name: "Jon Okeke", email: "editor@nodal.example", role: "editor" },
-  { name: "Elif Demir", email: "elif@nodal.example", role: "pm" },
-  { name: "Amara Okafor", email: "amara-okafor@nodal.example", role: "specialist", specialistSlug: "amara-okafor" },
+  { name: "Mira Alvarez", email: "admin@kerllabs.example", role: "admin" },
+  { name: "Jon Okeke", email: "editor@kerllabs.example", role: "editor" },
+  { name: "Elif Demir", email: "elif@kerllabs.example", role: "pm" },
+  { name: "Amara Okafor", email: "amara-okafor@kerllabs.example", role: "specialist", specialistSlug: "amara-okafor" },
 ];
 
 export async function getSession(): Promise<Session | null> {

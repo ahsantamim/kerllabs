@@ -4,7 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { themeInitScript } from "@nodal/ui";
 import "./globals.css";
 
-export const metadata: Metadata = { title: { default: "NODAL CMS", template: "%s · NODAL CMS" }, robots: { index: false } };
+export const metadata: Metadata = { title: { default: "Kerl Labs CMS", template: "%s · Kerl Labs CMS" }, robots: { index: false } };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

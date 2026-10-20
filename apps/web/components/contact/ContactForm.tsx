@@ -47,7 +47,7 @@ export function ContactForm() {
         <SelectField label="Topic" required options={["General question", "Pricing & engagement models", "Partnerships", "Careers"]} value={f.topic} onChange={(e) => setF({ ...f, topic: e.target.value })} />
       </div>
       <TextArea label="Message" required value={f.message} onChange={(e) => setF({ ...f, message: e.target.value })} state={has("Message") ? "error" : "default"} helper={has("Message") ? "Add a few words so we can help (min. 10 characters)." : "A few sentences is plenty."} />
-      <Checkbox label="I agree to NODAL storing these details to reply (privacy notice)." checked={f.consent} onChange={(e) => setF({ ...f, consent: e.target.checked })} error={has("Consent") ? "Please accept to continue." : undefined} />
+      <Checkbox label="I agree to Kerl Labs storing these details to reply (privacy notice)." checked={f.consent} onChange={(e) => setF({ ...f, consent: e.target.checked })} error={has("Consent") ? "Please accept to continue." : undefined} />
       <div className="flex flex-wrap items-center justify-between gap-4"><span className="type-mono-s text-fg-subtle">We never share your details.</span><Button size="L" type="submit" loading={pending}>Send message</Button></div>
     </form>
   );

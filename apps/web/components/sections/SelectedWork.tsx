@@ -42,7 +42,7 @@ export function SelectedWork({ studies }: { studies: CaseStudy[] }) {
 
       <div className="relative mt-6 desktop:min-h-[760px]">
         {/* Oversized title — bleeds off the LEFT edge */}
-        <h3 key={s.slug} aria-live="polite" className="nd-stagger -ml-[0.06em] select-none px-5 text-[clamp(72px,18vw,260px)] font-medium leading-[0.9] tracking-[-0.06em] tablet:px-10 desktop:absolute desktop:-left-9 desktop:top-0 desktop:px-0">
+        <h3 key={s.slug} aria-live="polite" className="nd-stagger ml-[0.06em] select-none px-5 text-[clamp(72px,18vw,260px)] font-medium leading-[0.9] tracking-[-0.06em] tablet:px-10 desktop:absolute desktop:-left-9 desktop:top-0 desktop:px-0">
           {s.title}
         </h3>
 

@@ -5,7 +5,7 @@ import { themeInitScript } from "@nodal/ui";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: { default: "NODAL — Hire the whole engineering team, or one specialist", template: "%s · NODAL" },
+  title: { default: "Kerl Labs — Hire the whole engineering team, or one specialist", template: "%s · Kerl Labs" },
   description:
     "A senior, distributed engineering team. Hire all of us from architecture to launch — or one specialist for the problem in front of you. Free consultation with a product manager.",
 };
