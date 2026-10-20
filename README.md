@@ -14,7 +14,9 @@ cp .env.example .env
 pnpm dev                       # web → http://localhost:3000 · cms → http://localhost:3001
 ```
 
-The CMS runs on in-memory mock data by default. Sign in at `/login` as any of the four dev users:
+The CMS currently runs on in-memory mock data. Specialists can register at `/register` and sign in at `/login`; account profiles and password hashes are kept in memory and are cleared when the CMS process restarts. PostgreSQL persistence is not wired to authentication yet.
+
+For local CMS demos, sign in at `/login` as any of the four development users:
 
 | User | Role | Can |
 |---|---|---|

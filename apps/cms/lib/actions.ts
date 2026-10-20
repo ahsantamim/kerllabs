@@ -3,8 +3,11 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { can, canEditSpecialist } from "@nodal/content";
-import { DEV_USERS, SESSION_COOKIE, encodeSession, getSession } from "./session";
-import { newId, store } from "./store";
+import { sampleData } from "@nodal/content";
+import { DEV_USERS, SESSION_COOKIE, getSession } from "./session";
+import { createSessionToken } from "./session-token";
+import { hashPassword, verifyPassword } from "./password";
+import { newId, store, type MockUser } from "./store";
 
 async function requireSession() {
   const s = await getSession();
@@ -13,9 +16,108 @@ async function requireSession() {
 }
 
 export async function signIn(formData: FormData) {
-  const user = DEV_USERS.find((u) => u.email === formData.get("email"));
-  if (!user) return;
-  (await cookies()).set(SESSION_COOKIE, encodeSession(user), { httpOnly: true, sameSite: "lax", path: "/" });
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  if (!email || email.length > 254 || !password || password.length > 128) redirect("/login?error=credentials");
+  const user = store.users.find((candidate) => candidate.email === email);
+  if (!user || !(await verifyPassword(password, user.passwordHash))) redirect("/login?error=credentials");
+  const session = { name: user.name, email: user.email, role: user.role, specialistSlug: user.specialistSlug, userId: user.id };
+  const token = await createSessionToken(session);
+  (await cookies()).set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  redirect("/portal/profile");
+}
+
+export async function registerSpecialist(formData: FormData) {
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const password = String(formData.get("password") ?? "");
+  const confirmation = String(formData.get("confirmPassword") ?? "");
+
+  if (name.length < 2 || name.length > 80) redirect("/register?error=name");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) redirect("/register?error=email");
+  if (password.length < 12 || password.length > 128) redirect("/register?error=password");
+  if (password !== confirmation) redirect("/register?error=match");
+  if (DEV_USERS.some((user) => user.email === email) || store.users.some((user) => user.email === email)) {
+    redirect("/register?error=exists");
+  }
+
+  const baseSlug = name.toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "specialist";
+  let slug = `${baseSlug}-${newId()}`;
+  while (store.specialists.some((specialist) => specialist.slug === slug)) slug = `${baseSlug}-${newId()}`;
+
+  const user: MockUser = {
+    id: newId(),
+    name,
+    email,
+    passwordHash: await hashPassword(password),
+    role: "specialist",
+    specialistSlug: slug,
+  };
+  const profile = structuredClone(sampleData.specialists[0]!);
+  Object.assign(profile, {
+    slug,
+    name,
+    initials: name.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase(),
+    role: "Specialist",
+    discipline: "",
+    headline: "Complete your profile to introduce yourself to clients.",
+    about: [],
+    location: "",
+    timezone: "",
+    utcOffset: 0,
+    city: "",
+    languages: [],
+    yearsExperience: "",
+    engagement: "",
+    responseTime: "",
+    availability: { label: "Availability to be added", tone: "soon", hoursPerWeek: 0 },
+    capacity: Array(10).fill(0),
+    stackTags: [],
+    featured: false,
+    status: "draft",
+    links: [],
+    bestAt: [],
+    services: [],
+    portfolio: [],
+    experience: [],
+    stack: {},
+    writing: [],
+    credentials: [],
+    updatedAt: new Date().toISOString().slice(0, 10),
+  });
+
+  store.users.push(user);
+  store.specialists.push(profile);
+  const session = { name: user.name, email: user.email, role: user.role, specialistSlug: slug, userId: user.id };
+  const token = await createSessionToken(session);
+  (await cookies()).set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
+  redirect("/portal/profile");
+}
+
+export async function signInDemo(formData: FormData) {
+  if (process.env.NODE_ENV === "production") redirect("/login");
+  const user = DEV_USERS.find((candidate) => candidate.email === formData.get("email"));
+  if (!user) redirect("/login?error=credentials");
+  const token = await createSessionToken(user);
+  (await cookies()).set(SESSION_COOKIE, token, {
+    httpOnly: true,
+    sameSite: "lax",
+    secure: false,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  });
   redirect(user.role === "specialist" ? "/portal/profile" : "/admin");
 }
 

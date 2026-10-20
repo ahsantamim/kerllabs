@@ -5,6 +5,7 @@ import { sampleData, type PublishStatus, type Specialist, type SpecialistService
  * — Specialist, SpecialistService, PortfolioItem, ProfileRevision, Service, Solution, HomepageSection.
  */
 type Revision = { slug: string; submittedAt: string; changes: { field: string; before: string; after: string }[]; status: PublishStatus; note?: string };
+type MockUser = { id: string; name: string; email: string; passwordHash: string; role: "specialist"; specialistSlug: string };
 
 const g = globalThis as unknown as { __nodalStore?: ReturnType<typeof init> };
 function init() {
@@ -14,6 +15,7 @@ function init() {
     solutions: structuredClone(sampleData.solutions),
     homepage: structuredClone(sampleData.homepageSections),
     consultations: structuredClone(sampleData.consultations),
+    users: [] as MockUser[],
     revisions: [
       { slug: "amara-okafor", submittedAt: "2026-10-19", status: "in_review", changes: [
         { field: "Services", before: "RAG system build · Embedded AI engineer", after: "+ LLM evaluation audit (2-week fixed) · RAG system build · Embedded AI engineer" },
@@ -33,4 +35,4 @@ function init() {
 export const store = (g.__nodalStore ??= init());
 
 export const newId = () => Math.random().toString(36).slice(2, 9);
-export type { Revision, SpecialistService, PortfolioItem };
+export type { MockUser, Revision, SpecialistService, PortfolioItem };

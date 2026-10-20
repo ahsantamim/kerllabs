@@ -1,17 +1,7 @@
 import { cookies } from "next/headers";
-import type { Role } from "@nodal/content";
-
-/**
- * DEV SESSION — a signed-in user is stored in a cookie so the role model can be exercised locally.
- * Replace with Auth.js (email magic link / Google Workspace SSO) before production; keep the
- * `Session` shape so permission checks in lib/actions.ts don't change.
- */
-export interface Session {
-  name: string;
-  email: string;
-  role: Role;
-  specialistSlug?: string;
-}
+import { store } from "./store";
+import { verifySessionToken, type Session } from "./session-token";
+export type { Session } from "./session-token";
 
 export const SESSION_COOKIE = "nodal_session";
 
@@ -24,12 +14,9 @@ export const DEV_USERS: Session[] = [
 
 export async function getSession(): Promise<Session | null> {
   const raw = (await cookies()).get(SESSION_COOKIE)?.value;
-  if (!raw) return null;
-  try {
-    return JSON.parse(Buffer.from(raw, "base64url").toString()) as Session;
-  } catch {
-    return null;
-  }
+  const session = await verifySessionToken(raw);
+  if (!session?.userId) return session;
+  const user = store.users.find((candidate) => candidate.id === session.userId);
+  if (!user) return null;
+  return { name: user.name, email: user.email, role: user.role, specialistSlug: user.specialistSlug, userId: user.id };
 }
-
-export const encodeSession = (s: Session) => Buffer.from(JSON.stringify(s)).toString("base64url");
