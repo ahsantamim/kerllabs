@@ -1,0 +1,254 @@
+// NODAL content model — shared by apps/web (read) and apps/cms (read/write).
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  PM
+  SPECIALIST
+}
+
+enum PublishStatus {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  PUBLISHED
+  SCHEDULED
+  ARCHIVED
+}
+
+enum Tier {
+  EXPERIENCE
+  PRODUCT_LOGIC
+  INFRASTRUCTURE
+}
+
+enum SolutionType {
+  PRODUCT
+  SOLUTION
+  OPEN_SOURCE
+}
+
+enum PortfolioKind {
+  CASE
+  OPEN_SOURCE
+  NDA
+  TALK
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  RECOMMENDATION_DUE
+  RECOMMENDATION_SENT
+  CANCELLED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  name         String
+  role         Role        @default(SPECIALIST)
+  specialist   Specialist? // set when role = SPECIALIST (or a PM with a public profile)
+  hostedCalls  Consultation[] @relation("host")
+  createdAt    DateTime    @default(now())
+}
+
+model Service {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  code        String        @db.VarChar(2)
+  name        String
+  tier        Tier
+  summary     String
+  tags        String[]
+  order       Int
+  showOnGraph Boolean       @default(true)
+  showInNav   Boolean       @default(true)
+  connects    String[]      // other service slugs
+  status      PublishStatus @default(DRAFT)
+  specialists Specialist[]  @relation("SpecialistDisciplines")
+  updatedAt   DateTime      @updatedAt
+}
+
+/// Public portfolio page /team/{slug}. Edited ONLY by its owner (User.role = SPECIALIST) or an admin.
+model Specialist {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  owner           User          @relation(fields: [ownerId], references: [id])
+  ownerId         String        @unique
+  name            String
+  initials        String
+  role            String
+  headline        String
+  about           String[]
+  portraitUrl     String?
+  location        String
+  timezone        String
+  utcOffset       Float
+  languages       String[]
+  yearsExperience String
+  engagement      String
+  responseTime    String
+  availabilityLabel String
+  hoursPerWeek    Int
+  capacity        Int[]         // free hours per week, next 10 weeks (calendar sync)
+  stackTags       String[]
+  stack           Json          // { [category]: string[] }
+  bestAt          Json          // [{ title, text }]
+  links           Json          // [{ label, href }]
+  featured        Boolean       @default(false)
+  status          PublishStatus @default(DRAFT)
+  disciplines     Service[]     @relation("SpecialistDisciplines")
+  services        SpecialistService[]
+  portfolio       PortfolioItem[]
+  experience      ExperienceItem[]
+  writing         WritingItem[]
+  revisions       ProfileRevision[]
+  updatedAt       DateTime      @updatedAt
+}
+
+model SpecialistService {
+  id           String     @id @default(cuid())
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  specialistId String
+  title        String
+  format       String
+  description  String
+  deliverables String[]
+  cta          String     // book | discuss | request
+  featured     Boolean    @default(false)
+  order        Int        @default(0)
+}
+
+model PortfolioItem {
+  id           String        @id @default(cuid())
+  specialist   Specialist    @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  specialistId String
+  kind         PortfolioKind
+  title        String
+  summary      String
+  role         String?
+  contribution String?
+  stack        String[]
+  images       String[]
+  caseStudy    CaseStudy?    @relation(fields: [caseStudyId], references: [id])
+  caseStudyId  String?
+  nda          Boolean       @default(false)
+  order        Int           @default(0)
+}
+
+model ExperienceItem {
+  id           String     @id @default(cuid())
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  specialistId String
+  period       String
+  title        String
+  org          String
+  summary      String
+  order        Int        @default(0)
+}
+
+model WritingItem {
+  id           String     @id @default(cuid())
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  specialistId String
+  date         String
+  title        String
+  kind         String
+  url          String?
+}
+
+/// Specialist edits are stored as a pending revision; an admin approves (merges) or requests changes.
+model ProfileRevision {
+  id           String        @id @default(cuid())
+  specialist   Specialist    @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  specialistId String
+  payload      Json          // full proposed profile snapshot
+  status       PublishStatus @default(IN_REVIEW)
+  reviewerNote String?
+  submittedAt  DateTime      @default(now())
+  reviewedAt   DateTime?
+}
+
+model CaseStudy {
+  id          String          @id @default(cuid())
+  slug        String          @unique
+  title       String
+  summary     String
+  industry    String
+  duration    String
+  engagement  String
+  disciplines String[]
+  context     String
+  constraints Json
+  approach    String
+  metrics     Json
+  featured    Boolean         @default(false)
+  fictional   Boolean         @default(true)
+  status      PublishStatus   @default(DRAFT)
+  portfolio   PortfolioItem[]
+}
+
+model Solution {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  type        SolutionType
+  name        String
+  summary     String
+  stack       String[]
+  coverUrl    String?
+  isNewUntil  DateTime?
+  publishedAt DateTime?
+  status      PublishStatus @default(DRAFT)
+}
+
+model HomepageSection {
+  id         String  @id
+  label      String
+  dataSource String
+  visible    Boolean @default(true)
+  order      Int
+}
+
+model SiteSetting {
+  key   String @id
+  value Json
+}
+
+model Company {
+  id            String         @id @default(cuid())
+  domain        String         @unique // free consultations are counted per domain
+  name          String?
+  consultations Consultation[]
+}
+
+model Consultation {
+  id             String             @id @default(cuid())
+  company        Company            @relation(fields: [companyId], references: [id])
+  companyId      String
+  contactName    String
+  contactEmail   String
+  host           User               @relation("host", fields: [hostId], references: [id])
+  hostId         String
+  topic          String
+  notes          String?
+  startsAt       DateTime
+  free           Boolean            @default(true)
+  status         ConsultationStatus @default(SCHEDULED)
+  recommendation Json?              // { verdict, rationale, shortlist: specialistSlug[] }
+  createdAt      DateTime           @default(now())
+}
+
+model Inquiry {
+  id        String   @id @default(cuid())
+  kind      String   // team | specialist | contact
+  payload   Json
+  createdAt DateTime @default(now())
+}

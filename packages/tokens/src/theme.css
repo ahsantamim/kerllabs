@@ -1,0 +1,175 @@
+/*
+ * NODAL theme — generated from src/index.ts (Figma "Theme / Dark" + "Theme / Light").
+ * Dark is the default. Light is applied with <html data-theme="light">.
+ * Import AFTER `@import "tailwindcss";` in each app's globals.css.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --nd-bg-base: #0A0A0B;
+  --nd-bg-raised: #0F0F11;
+  --nd-surface-1: #141417;
+  --nd-surface-2: #1B1B1F;
+  --nd-surface-3: #24242A;
+  --nd-surface-inverse: #F2F1EE;
+  --nd-border-subtle: #232328;
+  --nd-border-default: #2E2E35;
+  --nd-border-strong: #45454F;
+  --nd-text-primary: #F2F1EE;
+  --nd-text-secondary: #A6A5A1;
+  --nd-text-tertiary: #6F6E6A;
+  --nd-text-inverse: #0A0A0B;
+  --nd-text-disabled: #4A4A50;
+  --nd-accent: #FF5A1F;
+  --nd-accent-hover: #FF7A47;
+  --nd-accent-pressed: #E04812;
+  --nd-accent-subtle: rgba(255, 90, 31, 0.12);
+  --nd-accent-on: #0A0A0B;
+  --nd-focus-ring: #FFB08F;
+  --nd-success: #3DD68C;
+  --nd-error: #FF6363;
+  --nd-warning: #F5B841;
+  --nd-success-subtle: rgba(61, 214, 140, 0.12);
+  --nd-error-subtle: rgba(255, 99, 99, 0.12);
+  --nd-art-line: rgba(242, 241, 238, 0.14);
+  --nd-art-glow: rgba(255, 90, 31, 0.35);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --nd-bg-base: #F4F2EE;
+  --nd-bg-raised: #FAF9F6;
+  --nd-surface-1: #FFFFFF;
+  --nd-surface-2: #ECE9E3;
+  --nd-surface-3: #E2DED6;
+  --nd-surface-inverse: #121214;
+  --nd-border-subtle: #DEDAD2;
+  --nd-border-default: #CBC6BC;
+  --nd-border-strong: #A39E94;
+  --nd-text-primary: #121214;
+  --nd-text-secondary: #4F4D49;
+  --nd-text-tertiary: #86827B;
+  --nd-text-inverse: #F4F2EE;
+  --nd-text-disabled: #B5B1A9;
+  --nd-accent: #E04A12;
+  --nd-accent-hover: #C93F0C;
+  --nd-accent-pressed: #AE360A;
+  --nd-accent-subtle: rgba(224, 74, 18, 0.10);
+  --nd-accent-on: #0A0A0B;
+  --nd-focus-ring: #7A2A08;
+  --nd-success: #13804B;
+  --nd-error: #C42B2B;
+  --nd-warning: #9A6A00;
+  --nd-success-subtle: rgba(19, 128, 75, 0.10);
+  --nd-error-subtle: rgba(196, 43, 43, 0.08);
+  --nd-art-line: rgba(18, 18, 20, 0.16);
+  --nd-art-glow: rgba(224, 74, 18, 0.22);
+}
+
+@theme inline {
+  /* surfaces */
+  --color-base: var(--nd-bg-base);
+  --color-raised: var(--nd-bg-raised);
+  --color-surface-1: var(--nd-surface-1);
+  --color-surface-2: var(--nd-surface-2);
+  --color-surface-3: var(--nd-surface-3);
+  --color-inverse: var(--nd-surface-inverse);
+  /* borders (border-line-*) */
+  --color-line-subtle: var(--nd-border-subtle);
+  --color-line: var(--nd-border-default);
+  --color-line-strong: var(--nd-border-strong);
+  /* text (text-fg-*) */
+  --color-fg: var(--nd-text-primary);
+  --color-fg-muted: var(--nd-text-secondary);
+  --color-fg-subtle: var(--nd-text-tertiary);
+  --color-fg-inverse: var(--nd-text-inverse);
+  --color-fg-disabled: var(--nd-text-disabled);
+  /* accent */
+  --color-accent: var(--nd-accent);
+  --color-accent-hover: var(--nd-accent-hover);
+  --color-accent-pressed: var(--nd-accent-pressed);
+  --color-accent-subtle: var(--nd-accent-subtle);
+  --color-on-accent: var(--nd-accent-on);
+  --color-focus: var(--nd-focus-ring);
+  /* status */
+  --color-success: var(--nd-success);
+  --color-error: var(--nd-error);
+  --color-warning: var(--nd-warning);
+  --color-success-subtle: var(--nd-success-subtle);
+  --color-error-subtle: var(--nd-error-subtle);
+  --color-art-line: var(--nd-art-line);
+  --color-art-glow: var(--nd-art-glow);
+}
+
+@theme {
+  --font-sans: var(--font-geist-sans), "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-spatial: cubic-bezier(0.45, 0, 0.15, 1);
+
+  --shadow-elev-1: 0 8px 24px -8px rgb(0 0 0 / 0.35);
+  --shadow-elev-2: 0 24px 64px -16px rgb(0 0 0 / 0.5);
+  --shadow-glow: 0 0 32px 0 rgb(255 90 31 / 0.45);
+  --shadow-focus: 0 0 0 3px var(--nd-focus-ring);
+
+  --breakpoint-tablet: 834px;
+  --breakpoint-desktop: 1280px;
+}
+
+/* ---------- Type scale (Figma text styles) ---------- */
+@utility type-display-xxl { font-size: clamp(56px, 9vw, 136px); line-height: 0.9; letter-spacing: -0.05em; font-weight: 500; }
+@utility type-display-xl { font-size: clamp(48px, 7.2vw, 104px); line-height: 0.94; letter-spacing: -0.045em; font-weight: 500; }
+@utility type-display-l { font-size: clamp(44px, 5.6vw, 80px); line-height: 0.98; letter-spacing: -0.04em; font-weight: 500; }
+@utility type-h1 { font-size: clamp(36px, 4.2vw, 60px); line-height: 1.04; letter-spacing: -0.03em; font-weight: 500; }
+@utility type-h2 { font-size: clamp(28px, 3vw, 44px); line-height: 1.1; letter-spacing: -0.025em; font-weight: 500; }
+@utility type-h3 { font-size: clamp(22px, 2.1vw, 30px); line-height: 1.2; letter-spacing: -0.015em; font-weight: 500; }
+@utility type-h4 { font-size: 22px; line-height: 1.3; letter-spacing: -0.01em; font-weight: 500; }
+@utility type-h5 { font-size: 18px; line-height: 1.35; letter-spacing: -0.005em; font-weight: 500; }
+@utility type-serif { font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em; }
+@utility type-quote { font-family: var(--font-serif); font-size: clamp(24px, 2.2vw, 32px); line-height: 1.25; }
+@utility type-body-l { font-size: clamp(17px, 1.4vw, 20px); line-height: 1.5; letter-spacing: -0.005em; }
+@utility type-body-m { font-size: 16px; line-height: 1.6; }
+@utility type-body-s { font-size: 14px; line-height: 1.55; }
+@utility type-label-l { font-size: 16px; line-height: 1.25; font-weight: 500; }
+@utility type-label-m { font-size: 14px; line-height: 1.25; font-weight: 500; }
+@utility type-label-s { font-size: 12px; line-height: 1.25; font-weight: 500; }
+@utility type-mono-m { font-family: var(--font-mono); font-size: 13px; line-height: 1.45; letter-spacing: 0.02em; text-transform: uppercase; }
+@utility type-mono-s { font-family: var(--font-mono); font-size: 11px; line-height: 1.45; letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* ---------- Layout ---------- */
+@utility container-nd { width: 100%; max-width: 1440px; margin-inline: auto; padding-inline: 20px;
+  @media (width >= 834px) { padding-inline: 40px; }
+  @media (width >= 1280px) { padding-inline: 80px; }
+}
+
+@layer base {
+  html { background: var(--nd-bg-base); color: var(--nd-text-primary); }
+  body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+  ::selection { background: var(--nd-accent); color: var(--nd-accent-on); }
+  :focus-visible { outline: 2px solid var(--nd-focus-ring); outline-offset: 3px; border-radius: 6px; }
+}
+
+/* Reveal-on-scroll helper (paired with <Reveal/>). */
+.nd-reveal { opacity: 0; transform: translateY(24px); transition: opacity 640ms var(--ease-enter), transform 640ms var(--ease-enter); }
+.nd-reveal[data-visible="true"] { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; scroll-behavior: auto !important; }
+  .nd-reveal { opacity: 1; transform: none; }
+}
+
+@keyframes nd-toast { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes nd-stagger { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.nd-stagger { animation: nd-stagger 320ms var(--ease-enter) both; }
+@keyframes nd-progress { from { width: 0; } to { width: 100%; } }

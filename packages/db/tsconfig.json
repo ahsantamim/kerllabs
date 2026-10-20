@@ -1,0 +1,1 @@
+{ "extends": "@nodal/config/tsconfig.library.json", "include": ["src", "prisma"] }

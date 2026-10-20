@@ -1,0 +1,12 @@
+{
+  "name": "@nodal/tokens",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
+  },
+  "scripts": { "typecheck": "tsc --noEmit" },
+  "devDependencies": { "@nodal/config": "workspace:*", "typescript": "^5.8.3" }
+}
