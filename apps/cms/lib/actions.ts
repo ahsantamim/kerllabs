@@ -2,20 +2,37 @@
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { can, canEditSpecialist } from "@nodal/content";
-import { sampleData } from "@nodal/content";
+import { can, canEditSpecialist, sampleData } from "@nodal/content";
+import { hasSupabaseEnv } from "@nodal/supabase";
 import { DEV_USERS, SESSION_COOKIE, getSession } from "./session";
 import { createSessionToken } from "./session-token";
 import { hashPassword, verifyPassword } from "./password";
 import { newId, store, type MockUser } from "./store";
+import {
+  addPortfolioRow,
+  addServiceRow,
+  deleteServiceRow,
+  deleteSolutionRow,
+  persistProfile,
+  persistService,
+  persistSolution,
+  removeServiceRow,
+  reviewRevisionRow,
+  signInWithSupabase,
+  signOutSupabase,
+  signUpSpecialist,
+  toggleFlagRow,
+  updateSolutionRow,
+} from "./supabase-cms";
 
 async function requireSession() {
-  const s = await getSession();
-  if (!s) redirect("/login");
-  return s;
+  const session = await getSession();
+  if (!session) redirect("/login");
+  return session;
 }
 
 export async function signIn(formData: FormData) {
+  if (hasSupabaseEnv()) return signInWithSupabase(formData);
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
   if (!email || email.length > 254 || !password || password.length > 128) redirect("/login?error=credentials");
@@ -34,6 +51,7 @@ export async function signIn(formData: FormData) {
 }
 
 export async function registerSpecialist(formData: FormData) {
+  if (hasSupabaseEnv()) return signUpSpecialist(formData);
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "").trim().toLowerCase();
   const password = String(formData.get("password") ?? "");
@@ -107,7 +125,7 @@ export async function registerSpecialist(formData: FormData) {
 }
 
 export async function signInDemo(formData: FormData) {
-  if (process.env.NODE_ENV === "production") redirect("/login");
+  if (process.env.NODE_ENV === "production" || hasSupabaseEnv()) redirect("/login");
   const user = DEV_USERS.find((candidate) => candidate.email === formData.get("email"));
   if (!user) redirect("/login?error=credentials");
   const token = await createSessionToken(user);
@@ -122,37 +140,40 @@ export async function signInDemo(formData: FormData) {
 }
 
 export async function signOut() {
+  if (hasSupabaseEnv()) return signOutSupabase();
   (await cookies()).delete(SESSION_COOKIE);
   redirect("/login");
 }
 
-/* ---------- Admin ---------- */
 export async function reviewRevision(slug: string, decision: "approve" | "changes", note?: string) {
-  const s = await requireSession();
-  if (!can(s.role, "content.publish")) throw new Error("Forbidden");
-  const rev = store.revisions.find((r) => r.slug === slug && r.status === "in_review");
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return reviewRevisionRow(session, slug, decision, note);
+  if (!can(session.role, "content.publish")) throw new Error("Forbidden");
+  const rev = store.revisions.find((item) => item.slug === slug && item.status === "in_review");
   if (!rev) return;
   rev.status = decision === "approve" ? "published" : "changes_requested";
   rev.note = note;
-  const sp = store.specialists.find((x) => x.slug === slug);
-  if (sp && decision === "approve") sp.status = "published";
-  store.activity.unshift(["now", `${s.name} ${decision === "approve" ? "approved" : "requested changes on"} ${sp?.name}’s profile`]);
+  const specialist = store.specialists.find((item) => item.slug === slug);
+  if (specialist && decision === "approve") specialist.status = "published";
+  store.activity.unshift(["now", `${session.name} ${decision === "approve" ? "approved" : "requested changes on"} ${specialist?.name}’s profile`]);
   revalidatePath("/admin", "layout");
   redirect("/admin/specialists");
 }
 
 export async function toggleFlag(kind: "specialist.featured" | "service.showOnGraph" | "homepage.visible", id: string, value: boolean) {
-  const s = await requireSession();
-  if (!can(s.role, kind === "specialist.featured" ? "content.publish" : "site.edit")) throw new Error("Forbidden");
-  if (kind === "specialist.featured") store.specialists.find((x) => x.slug === id)!.featured = value;
-  if (kind === "service.showOnGraph") store.services.find((x) => x.slug === id)!.showOnGraph = value;
-  if (kind === "homepage.visible") store.homepage.find((x) => x.id === id)!.visible = value;
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return toggleFlagRow(session, kind, id, value);
+  if (!can(session.role, kind === "specialist.featured" ? "content.publish" : "site.edit")) throw new Error("Forbidden");
+  if (kind === "specialist.featured") store.specialists.find((item) => item.slug === id)!.featured = value;
+  if (kind === "service.showOnGraph") store.services.find((item) => item.slug === id)!.showOnGraph = value;
+  if (kind === "homepage.visible") store.homepage.find((item) => item.id === id)!.visible = value;
   revalidatePath("/admin", "layout");
 }
 
 export async function saveSolution(formData: FormData) {
-  const s = await requireSession();
-  if (!can(s.role, "catalog.edit")) throw new Error("Forbidden");
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return persistSolution(session, formData);
+  if (!can(session.role, "catalog.edit")) throw new Error("Forbidden");
   const name = String(formData.get("name") ?? "").trim();
   if (!name) return;
   store.solutions.unshift({
@@ -160,7 +181,7 @@ export async function saveSolution(formData: FormData) {
     type: (formData.get("type") as "product") ?? "product",
     name,
     summary: String(formData.get("summary") ?? ""),
-    stack: String(formData.get("stack") ?? "").split(",").map((x) => x.trim()).filter(Boolean),
+    stack: String(formData.get("stack") ?? "").split(",").map((item) => item.trim()).filter(Boolean),
     isNew: formData.get("isNew") === "on",
     publishedAt: new Date().toISOString().slice(0, 10),
     status: formData.get("intent") === "publish" ? "published" : "draft",
@@ -169,76 +190,139 @@ export async function saveSolution(formData: FormData) {
   redirect("/admin/solutions");
 }
 
-/* ---------- Specialist portal (own record only) ---------- */
+export async function updateSolution(formData: FormData) {
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return updateSolutionRow(session, formData);
+  if (!can(session.role, "catalog.edit")) throw new Error("Forbidden");
+  const slug = String(formData.get("slug") ?? "");
+  const solution = store.solutions.find((item) => item.slug === slug);
+  if (!solution) return;
+  solution.name = String(formData.get("name") ?? solution.name);
+  solution.summary = String(formData.get("summary") ?? solution.summary);
+  solution.type = (formData.get("type") as "product") ?? solution.type;
+  solution.stack = String(formData.get("stack") ?? "").split(",").map((item) => item.trim()).filter(Boolean);
+  solution.isNew = formData.get("isNew") === "on";
+  solution.status = formData.get("intent") === "publish" ? "published" : "draft";
+  revalidatePath("/admin/solutions");
+  redirect("/admin/solutions");
+}
+
+export async function deleteSolution(slug: string) {
+  const session = await requireSession();
+  if (!hasSupabaseEnv()) {
+    if (!can(session.role, "catalog.edit")) throw new Error("Forbidden");
+    store.solutions.splice(0, store.solutions.length, ...store.solutions.filter((item) => item.slug !== slug));
+    revalidatePath("/admin/solutions");
+    return;
+  }
+  return deleteSolutionRow(session, slug);
+}
+
+export async function saveService(formData: FormData) {
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return persistService(session, formData);
+  if (!can(session.role, "catalog.edit")) throw new Error("Forbidden");
+  const name = String(formData.get("name") ?? "").trim();
+  if (!name) return;
+  const tier = String(formData.get("tier") ?? "experience");
+  store.services.push({
+    slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    code: String(formData.get("code") ?? "XX").trim().toUpperCase().slice(0, 2),
+    name,
+    tier: tier === "product_logic" || tier === "infrastructure" ? tier : "experience",
+    summary: String(formData.get("summary") ?? ""),
+    tags: String(formData.get("tags") ?? "").split(",").map((item) => item.trim()).filter(Boolean),
+    order: Number(formData.get("order") ?? store.services.length + 1) || store.services.length + 1,
+    showOnGraph: formData.get("showOnGraph") === "on",
+    connects: [],
+    status: formData.get("intent") === "publish" ? "published" : "draft",
+  });
+  revalidatePath("/admin/services");
+  redirect("/admin/services");
+}
+
+export async function deleteService(slug: string) {
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return deleteServiceRow(session, slug);
+  if (!can(session.role, "catalog.edit")) throw new Error("Forbidden");
+  const remaining = store.services.filter((item) => item.slug !== slug);
+  store.services.splice(0, store.services.length, ...remaining);
+  revalidatePath("/admin/services");
+}
+
 function ownRecord(sessionSlug: string | undefined, role: Parameters<typeof canEditSpecialist>[0]["role"], slug: string) {
   if (!canEditSpecialist({ role, specialistSlug: sessionSlug }, slug)) throw new Error("Forbidden: specialists can only edit their own profile");
-  const sp = store.specialists.find((x) => x.slug === slug);
-  if (!sp) throw new Error("Not found");
-  return sp;
+  const specialist = store.specialists.find((item) => item.slug === slug);
+  if (!specialist) throw new Error("Not found");
+  return specialist;
 }
 
 export async function saveProfile(formData: FormData) {
-  const s = await requireSession();
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return persistProfile(session, formData);
   const slug = String(formData.get("slug"));
-  const sp = ownRecord(s.specialistSlug, s.role, slug);
+  const specialist = ownRecord(session.specialistSlug, session.role, slug);
   const changes: { field: string; before: string; after: string }[] = [];
   for (const field of ["role", "headline", "location", "timezone"] as const) {
-    const v = String(formData.get(field) ?? "");
-    if (v && v !== sp[field]) {
-      changes.push({ field, before: sp[field], after: v });
-      sp[field] = v;
+    const value = String(formData.get(field) ?? "");
+    if (value && value !== specialist[field]) {
+      changes.push({ field, before: specialist[field], after: value });
+      specialist[field] = value;
     }
   }
   const about = String(formData.get("about") ?? "");
-  if (about && about !== sp.about.join("\n\n")) {
-    changes.push({ field: "about", before: sp.about[0]?.slice(0, 60) + "…", after: about.slice(0, 60) + "…" });
-    sp.about = about.split(/\n\s*\n/);
+  if (about && about !== specialist.about.join("\n\n")) {
+    changes.push({ field: "about", before: specialist.about[0]?.slice(0, 60) + "…", after: about.slice(0, 60) + "…" });
+    specialist.about = about.split(/\n\s*\n/);
   }
   if (formData.get("intent") === "submit" && changes.length) {
     store.revisions.unshift({ slug, submittedAt: new Date().toISOString().slice(0, 10), status: "in_review", changes });
-    sp.status = "in_review";
+    specialist.status = "in_review";
   }
   revalidatePath("/portal", "layout");
 }
 
 export async function addService(formData: FormData) {
-  const s = await requireSession();
-  const sp = ownRecord(s.specialistSlug, s.role, String(formData.get("slug")));
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return addServiceRow(session, formData);
+  const specialist = ownRecord(session.specialistSlug, session.role, String(formData.get("slug")));
   const title = String(formData.get("title") ?? "").trim();
   if (!title) return;
-  sp.services.push({
+  specialist.services.push({
     id: newId(),
     title,
     format: String(formData.get("format") ?? ""),
     description: String(formData.get("description") ?? ""),
-    deliverables: String(formData.get("deliverables") ?? "").split("\n").map((x) => x.trim()).filter(Boolean),
+    deliverables: String(formData.get("deliverables") ?? "").split("\n").map((item) => item.trim()).filter(Boolean),
     cta: (formData.get("cta") as "book") ?? "book",
   });
-  sp.status = "in_review";
+  specialist.status = "in_review";
   revalidatePath("/portal/services");
 }
 
 export async function removeService(slug: string, id: string) {
-  const s = await requireSession();
-  const sp = ownRecord(s.specialistSlug, s.role, slug);
-  sp.services = sp.services.filter((x) => x.id !== id);
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return removeServiceRow(session, slug, id);
+  const specialist = ownRecord(session.specialistSlug, session.role, slug);
+  specialist.services = specialist.services.filter((item) => item.id !== id);
   revalidatePath("/portal/services");
 }
 
 export async function addPortfolio(formData: FormData) {
-  const s = await requireSession();
-  const sp = ownRecord(s.specialistSlug, s.role, String(formData.get("slug")));
+  const session = await requireSession();
+  if (hasSupabaseEnv()) return addPortfolioRow(session, formData);
+  const specialist = ownRecord(session.specialistSlug, session.role, String(formData.get("slug")));
   const title = String(formData.get("title") ?? "").trim();
   if (!title) return;
-  sp.portfolio.push({
+  specialist.portfolio.push({
     id: newId(),
     kind: formData.get("nda") === "on" ? "nda" : (formData.get("kind") as "case") ?? "case",
     title,
     summary: String(formData.get("summary") ?? ""),
     role: String(formData.get("role") ?? "") || undefined,
     contribution: String(formData.get("contribution") ?? "") || undefined,
-    stack: String(formData.get("stack") ?? "").split(",").map((x) => x.trim()).filter(Boolean),
+    stack: String(formData.get("stack") ?? "").split(",").map((item) => item.trim()).filter(Boolean),
   });
-  sp.status = "in_review";
+  specialist.status = "in_review";
   revalidatePath("/portal/portfolio");
 }

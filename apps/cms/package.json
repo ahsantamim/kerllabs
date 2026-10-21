@@ -12,6 +12,7 @@
   "dependencies": {
     "@fontsource/instrument-serif": "^5.3.0",
     "@nodal/content": "workspace:*",
+    "@nodal/supabase": "workspace:*",
     "@nodal/tokens": "workspace:*",
     "@nodal/ui": "workspace:*",
     "geist": "^1.4.2",
@@ -27,6 +28,8 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@types/three": "^0.170.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "15.5.28",
     "tailwindcss": "^4.1.11",
     "typescript": "^5.8.3"
   }

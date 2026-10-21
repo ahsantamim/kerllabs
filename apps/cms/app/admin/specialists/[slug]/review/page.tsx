@@ -2,14 +2,15 @@ import { notFound } from "next/navigation";
 import { Button, RoleBadge, StatusBadge } from "@nodal/ui";
 import { ADMIN_NAV, Card, Shell } from "@/components/Shell";
 import { reviewRevision } from "@/lib/actions";
+import { loadCms } from "@/lib/cms-data";
 import { getSession } from "@/lib/session";
-import { store } from "@/lib/store";
 
 export default async function Review({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const session = (await getSession())!;
-  const sp = store.specialists.find((s) => s.slug === slug);
-  const rev = store.revisions.find((r) => r.slug === slug && r.status === "in_review");
+  const data = await loadCms();
+  const sp = data.specialists.find((s) => s.slug === slug);
+  const rev = data.revisions.find((r) => r.slug === slug && r.status === "in_review");
   if (!sp || !rev) notFound();
   const approve = reviewRevision.bind(null, slug, "approve", undefined);
   async function requestChanges(fd: FormData) {

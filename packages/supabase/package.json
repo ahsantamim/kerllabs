@@ -1,0 +1,29 @@
+{
+  "name": "@nodal/supabase",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts",
+    "./browser": "./src/browser.ts",
+    "./middleware": "./src/middleware.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nodal/content": "workspace:*",
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.118.0"
+  },
+  "devDependencies": {
+    "@nodal/config": "workspace:*",
+    "@types/node": "^22.15.30",
+    "next": "15.5.28",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "next": "^15"
+  }
+}

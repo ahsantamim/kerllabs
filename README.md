@@ -14,7 +14,7 @@ cp .env.example .env
 pnpm dev                       # web → http://localhost:3000 · cms → http://localhost:3001
 ```
 
-The CMS currently runs on in-memory mock data. Specialists can register at `/register` and sign in at `/login`; account profiles and password hashes are kept in memory and are cleared when the CMS process restarts. PostgreSQL persistence is not wired to authentication yet.
+The CMS uses in-memory mock data until Supabase env vars are set. See **[SETUP.md](./SETUP.md)** for the production project, Vercel env vars, migrations, and how to create the first admin. Specialists can register at `/register` and sign in at `/login`.
 
 For local CMS demos, sign in at `/login` as any of the four development users:
 
@@ -56,7 +56,7 @@ nodal/
 ### Architecture
 
 - **One design system, two apps.** `@nodal/tokens` → CSS variables (`--nd-*`) for dark + light themes, mapped to Tailwind utilities with `@theme inline`. `@nodal/ui` holds the presentational components; both apps import them.
-- **Content behind an interface.** Pages call `getRepository()` from `@nodal/content`. The default is `mockRepository`. Set `NODAL_DATA_SOURCE=prisma` and register `prismaRepository` from `@nodal/db` to use Postgres:
+- **Content behind an interface.** Pages call `getRepository()` from `@nodal/content`. The default is `mockRepository`. When `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are set, `apps/web` uses the Supabase repository in `@nodal/supabase`. The older Prisma repository in `@nodal/db` is still in the repo:
   ```bash
   pnpm db:generate && pnpm db:migrate && pnpm db:seed
   ```
@@ -66,9 +66,8 @@ nodal/
 
 ## Before production
 
-- [ ] Replace the dev cookie session (`apps/cms/lib/session.ts`) with Auth.js / your SSO. Keep the `Session` shape so the guards keep working.
-- [ ] Switch to Prisma + Postgres and move uploads to object storage (S3/R2).
-- [ ] Wire `submitInquiry` / `bookConsultation` to email + calendar (e.g. Resend + Cal.com).
+- [x] Supabase Auth for the CMS, Postgres for content, and the `media` Storage bucket. Apply `supabase/migrations` and set the env vars in [SETUP.md](./SETUP.md).
+- [ ] Wire `submitInquiry` / `bookConsultation` to email + calendar (e.g. Resend + Cal.com). Bookings and inquiries are stored in Supabase.
 - [ ] Build the 3D scenes (M-01, M-02, M-05 in DESIGN.md) with React Three Fiber. The static key-frames shipped here are the LCP / reduced-motion fallbacks.
 - [ ] Replace all fictional content, portraits and concept projects.
 

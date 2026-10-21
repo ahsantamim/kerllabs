@@ -13,7 +13,7 @@ export default async function MyPortfolio() {
         <div className="grid gap-4 tablet:grid-cols-2">
           {sp.portfolio.map((p) => (
             <Card key={p.id}>
-              <div className="h-24 rounded-md bg-surface-3" aria-hidden="true" />
+              <div className="h-24 rounded-md bg-surface-3 bg-cover bg-center" style={p.imageUrl ? { backgroundImage: `url(${p.imageUrl})` } : undefined} aria-hidden="true" />
               <span className="type-mono-s text-fg-subtle">{p.kind.replace("_", " ")}</span>
               <h2 className="type-h5">{p.title}</h2>
               <p className="type-body-s text-fg-muted">{p.summary}</p>
@@ -30,7 +30,7 @@ export default async function MyPortfolio() {
             <TextField name="role" label="Your role" placeholder="Lead AI engineer" />
             <TextArea name="contribution" label="What you did" />
             <TextField name="stack" label="Stack (comma separated)" />
-            <Dropzone />
+            <Dropzone inputName="image" />
             <label className="flex items-center gap-2.5 type-label-s"><input type="checkbox" name="nda" /> Client under NDA — hide details</label>
             <Button type="submit">Add & submit for review</Button>
           </form>

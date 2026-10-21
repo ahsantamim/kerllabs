@@ -1,7 +1,7 @@
 import { Button, Tag, cn } from "@nodal/ui";
 import { ADMIN_NAV, Shell, Table } from "@/components/Shell";
+import { loadCms } from "@/lib/cms-data";
 import { getSession } from "@/lib/session";
-import { store } from "@/lib/store";
 
 export const metadata = { title: "Consultations" };
 
@@ -9,10 +9,11 @@ const LABEL = { scheduled: "Scheduled", recommendation_due: "Recommendation due"
 
 export default async function Consultations() {
   const session = (await getSession())!;
+  const data = await loadCms();
   return (
     <Shell session={session} nav={ADMIN_NAV} active="/admin/consultations" title="Consultations" subtitle="Free sessions are capped at 2 per company domain" actions={<Button variant="secondary">Host availability</Button>}>
       <Table head={["Company", "When", "Host", "Topic", "Free used", "Status"]}>
-        {store.consultations.map((c) => (
+        {data.consultations.map((c) => (
           <tr key={c.id}>
             <td className="!text-fg">{c.company} · {c.contact}</td>
             <td>{c.when}</td>
