@@ -1,4 +1,13 @@
-import { getRepository } from "@nodal/content";
+import { getRepository, setRepository } from "@nodal/content";
+import { hasSupabaseEnv, supabaseRepository } from "@nodal/supabase";
 
-/** Single access point for content. Data source is configured in @nodal/content (mock ↔ Prisma). */
-export const content = () => getRepository();
+let configured = false;
+
+/** Published content. Uses Supabase when the public env vars are set, otherwise the bundled sample data. */
+export function content() {
+  if (!configured && hasSupabaseEnv()) {
+    setRepository(supabaseRepository);
+    configured = true;
+  }
+  return getRepository();
+}

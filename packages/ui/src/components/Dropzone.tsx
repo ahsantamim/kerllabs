@@ -4,7 +4,7 @@ import { cn } from "../lib/cn";
 import { Icon } from "./Icon";
 
 /** Upload Dropzone — Figma `Upload Dropzone`. Validates type/size client-side before upload. */
-export function Dropzone({ accept = "image/png,image/jpeg,image/webp", maxMb = 8, hint = "PNG, JPG, WebP · 16:10 recommended", onFile }: { accept?: string; maxMb?: number; hint?: string; onFile?: (f: File) => void }) {
+export function Dropzone({ accept = "image/png,image/jpeg,image/webp", maxMb = 8, hint = "PNG, JPG, WebP · 16:10 recommended", inputName, onFile }: { accept?: string; maxMb?: number; hint?: string; inputName?: string; onFile?: (f: File) => void }) {
   const [state, setState] = useState<"default" | "over" | "done" | "error">("default");
   const [name, setName] = useState("");
   const handle = (f?: File) => {
@@ -37,7 +37,7 @@ export function Dropzone({ accept = "image/png,image/jpeg,image/webp", maxMb = 8
         state === "default" && "border-dashed border-line-strong bg-surface-1 hover:border-fg-muted",
       )}
     >
-      <input type="file" accept={accept} className="sr-only" onChange={(e) => handle(e.target.files?.[0])} />
+      <input type="file" name={inputName} accept={accept} className="sr-only" onChange={(e) => handle(e.target.files?.[0])} />
       <Icon name={state === "done" ? "check" : state === "error" ? "alert" : "upload"} size={24} className={state === "done" ? "text-success" : state === "error" ? "text-error" : "text-fg-muted"} />
       <span className={cn("type-label-m", state === "error" ? "text-error" : "text-fg")}>
         {state === "over" ? "Release to upload" : name || "Drop images or click to upload"}

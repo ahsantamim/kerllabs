@@ -35,6 +35,7 @@ export interface PortfolioItem {
   contribution?: string;
   stack: string[];
   caseSlug?: string;
+  imageUrl?: string;
 }
 
 export interface Specialist {
@@ -93,6 +94,7 @@ export interface Solution {
   isNew?: boolean;
   publishedAt: string;
   status: PublishStatus;
+  coverUrl?: string;
 }
 
 export interface Host {

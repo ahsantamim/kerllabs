@@ -48,7 +48,7 @@ export function Consult({ hosts, initialHost }: { hosts: Host[]; initialHost?: s
     setErrors([]);
     if (step < 3) return setStep(step + 1);
     start(async () => {
-      const r = await bookConsultation({ name: f.name, email: f.email, consent: f.consent ? "yes" : "no" });
+      const r = await bookConsultation({ name: f.name, email: f.email, consent: f.consent ? "yes" : "no", topic, host: host?.name ?? "", when: slot, notes: f.notes });
       if (r.ok) { setUsed(r.used ?? 1); setStep(4); }
       else if (r.errors[0] === "limit") setLimit(true);
       else setErrors(r.errors);
